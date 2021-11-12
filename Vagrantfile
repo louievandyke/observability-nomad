@@ -25,9 +25,9 @@ sudo docker --version
 sudo apt-get install unzip curl vim -y
 
 echo "Installing Nomad..."
-NOMAD_VERSION=1.1.2
+NOMAD_VERSION=nomad_1.2.0-beta1
 cd /tmp/
-if ! curl --fail -sSL https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip -o nomad.zip 2>/dev/null; then
+if ! curl --fail -sSL https://releases.hashicorp.com/nomad/1.2.0-beta1/nomad_1.2.0-beta1_linux_amd64.zip -o nomad.zip 2>/dev/null; then
   echo "Failed to download Nomad $NOMAD_VERSION"
   exit 1
 fi
@@ -185,9 +185,9 @@ Vagrant.configure(2) do |config|
   config.vm.provision "shell", inline: $script, env: {"DOCKERHUBID"=>ENV['DOCKERHUBID'], "DOCKERHUBPASSWD"=>ENV['DOCKERHUBPASSWD']}, privileged: false
 
   # Expose the nomad api and ui to the host
-  config.vm.network "forwarded_port", guest: 4646, host: 4646
+  config.vm.network "forwarded_port", guest: 4646, host: 4656
   # consul
-  config.vm.network "forwarded_port", guest: 8500, host: 8500
+  config.vm.network "forwarded_port", guest: 8500, host: 8510
   # grafana
   config.vm.network "forwarded_port", guest: 3000, host: 3000
   # prometheus
@@ -198,6 +198,8 @@ Vagrant.configure(2) do |config|
   config.vm.network "forwarded_port", guest: 3200, host: 3200
   # tns app
   config.vm.network "forwarded_port", guest: 8001, host: 8001
+  # dummy
+  config.vm.network "forwarded_port", guest: 8002, host: 8002
 
   # Increase memory for Parallels Desktop
   config.vm.provider "parallels" do |p, o|
@@ -222,4 +224,12 @@ Vagrant.configure(2) do |config|
   timezone_suffix = offset >= 0 ? "-#{offset.to_s}" : "+#{offset.to_s}"
   timezone = 'Etc/GMT' + timezone_suffix
   config.vm.provision :shell, :inline => "sudo rm /etc/localtime && sudo ln -s /usr/share/zoneinfo/" + timezone + " /etc/localtime", run: "always"
+
+#def maybe_replace_nomad(config)
+#  # For uploading a custom Nomad binary
+#  if File.file?("#{Dir.pwd}/nomad")
+#    config.vm.provision "file",
+#      source: "nomad",
+#      destination: "/tmp/nomad"
+#  end
 end

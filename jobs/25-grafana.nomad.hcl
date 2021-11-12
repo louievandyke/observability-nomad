@@ -6,9 +6,9 @@ job "grafana" {
     count = 1
 
     network {
-      dns {
-        servers = ["172.17.0.1", "8.8.8.8", "8.8.4.4"]
-      }
+      #dns {
+      #  servers = ["127.0.0.1"]
+      #}
       port "http" {
         static = 3000
       }

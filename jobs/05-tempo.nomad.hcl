@@ -6,13 +6,13 @@ job "tempo" {
     count = 1
 
     network {
-      dns {
-        servers = ["172.17.0.1", "8.8.8.8", "8.8.4.4"]
-      }
+      #dns {
+      #  servers = ["127.0.0.1"]
+      #}
       port "tempo" {
           static = "3400"
       }
-      port "tempo-write" {
+      port "tempowrite" {
         static = "6831"
       }
     }
@@ -40,7 +40,7 @@ job "tempo" {
       }
       config {
         image = "grafana/tempo:demo"
-        ports = ["tempo", "tempo-write"]
+        ports = ["tempo", "tempowrite"]
         args = [
           "-config.file=/local/tempo.yml",
           "-server.http-listen-port=${NOMAD_PORT_tempo}",
